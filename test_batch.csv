@@ -1,0 +1,5 @@
+phase,altitude_ft,speed_knots,pitch_deg,vertical_speed,engine_thrust,wind_speed_knots,crosswind_component,visibility_km,temperature_celsius,humidity_percent,weather,time_of_day,runway_condition,pilot_error,pilot_experience,aircraft_weight,flap_setting,engine_status,fuel_level
+approach,3000,145,-1.5,-600,60,10,5,10,20,50,0,1,0,0,5000,65000,30,1,50
+approach,800,140,-6.0,-1500,45,15,8,3,15,80,1,0,0,1,1000,60000,20,1,40
+landing,50,155,2.0,-900,55,28,26,8,22,60,0,1,1,0,3000,62000,40,1,30
+approach,2000,135,-2.0,-700,0,12,6,10,18,55,0,1,0,0,4000,64000,30,0,45

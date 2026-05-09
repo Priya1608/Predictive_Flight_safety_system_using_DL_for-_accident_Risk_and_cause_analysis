@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Analysis Result - Flight Safety AI</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ---------- BACKGROUND ---------- */
+body {
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #0f2027, #020617);
+    color: #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* ---------- GLASS CARD ---------- */
+.dashboard {
+    width: 95%;
+    max-width: 900px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(18px);
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* ---------- RESULT PANEL ---------- */
+.result {
+    background: rgba(0,0,0,0.45);
+    border-radius: 14px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.high, .critical, .Critical { background: rgba(239,68,68,0.2); color: #f87171; }
+.medium, .Medium { background: rgba(251,191,36,0.2); color: #facc15; }
+.low, .Low { background: rgba(34,197,94,0.2); color: #4ade80; }
+
+.metric {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* ---------- ANALYSIS ANIMATION ---------- */
+.analysis-section {
+    animation: fadeUp 0.8s ease forwards;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+    margin: 16px 0 10px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    opacity: 0.85;
+}
+
+/* ---------- CARDS ---------- */
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cause-card {
+    background: linear-gradient(135deg, rgba(239,68,68,0.18), rgba(0,0,0,0.4));
+    border-left: 4px solid #ef4444;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    position: relative;
+    animation: slideIn 0.5s ease forwards;
+}
+
+.action-card {
+    background: linear-gradient(135deg, rgba(34,197,94,0.18), rgba(0,0,0,0.4));
+    border-left: 4px solid #22c55e;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    animation: slideIn 0.6s ease forwards;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ---------- LIVE DOT ---------- */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+    70% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+    100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+.arrow { margin-right: 6px; font-weight: bold; }
+
+/* ---------- BUTTON ---------- */
+.btn-back {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <div class="result">
+        <h2 style="font-size: 20px; margin-bottom: 10px;">Analysis Results - {{ phase|capitalize }} Phase</h2>
+
+        {% if prediction %}
+            <div>
+                <div class="badge {{ severity|lower }}" style="margin-right: 10px;">
+                    SEVERITY: {{ severity|upper }}
+                </div>
+                {% if advanced_ml %}
+                <div class="badge {% if outcome == 'Safe' %}low{% elif outcome == 'Minor Incident' %}medium{% else %}critical{% endif %}">
+                    OUTCOME: {{ outcome|upper }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="metric"><b>Accident Prediction:</b> <span style="font-size: 18px;">{{ prediction }}</span></div>
+            
+            <div style="font-size: 14px; opacity: 0.9; letter-spacing: 0.2px; line-height: 1.5; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid #38bdf8;">
+                <b>Description</b><br>
+                {{ description }}
+                
+                {% if exact_factors %}
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <b style="color: #f87171;">Specific Anomalies Detected in Your Input:</b>
+                    <ul style="margin-top: 8px; margin-left: 20px;">
+                        {% for factor in exact_factors %}
+                        <li style="margin-bottom: 4px;">{{ factor }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if severity != "Low" and severity != "Unknown" %}
+                <div class="analysis-section">
+                    <h3 class="section-title">⚠️ Potential Factors</h3>
+                    <div class="cards">
+                        <div class="cause-card">
+                            <span class="pulse-dot"></span>
+                            <b>Summary:</b> {{ causes_text }}
+                        </div>
+                        {% for c in causes_points %}
+                        <div class="cause-card">
+                            {{ c }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <h3 class="section-title">🛡 Preventive Actions</h3>
+                    <div class="cards">
+                        <div class="action-card">
+                            <span class="arrow">➜</span>
+                            <b>Guidance:</b> {{ prevention_text }}
+                        </div>
+                        {% for p in prevention_points %}
+                        <div class="action-card">
+                            <span class="arrow">➜</span>
+                            {{ p }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="metric" style="color: #4ade80; margin-top: 10px;">
+                    ✓ All systems indicate a high probability of a Safe {{ phase|capitalize }}. Normal SOPs apply.
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="metric">Error processing prediction. Please return and try again.</div>
+        {% endif %}
+        
+        <a href="/" class="btn-back">← Back to Inputs</a>
+    </div>
+
+</div>
+
+</body>
+</html>
